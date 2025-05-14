@@ -6,10 +6,62 @@
   <title>AI Assistant App</title>
   <link rel="manifest" href="manifest.json" />
   <link rel="icon" href="icons/icon-192.png">
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 2em;
+    }
+    #chat {
+      border: 1px solid #ccc;
+      padding: 1em;
+      max-width: 400px;
+      margin: auto;
+    }
+    .message {
+      margin: 0.5em 0;
+    }
+    .user { text-align: right; }
+    .bot { text-align: left; color: blue; }
+  </style>
 </head>
 <body>
   <h1>こんにちは、AIアシスタントです！</h1>
-  <p>ここに機能やチャットUIを追加していきましょう。</p>
+
+  <div id="chat">
+    <div class="message bot">ご用件をどうぞ。</div>
+  </div>
+
+  <input type="text" id="userInput" placeholder="メッセージを入力..." />
+  <button onclick="sendMessage()">送信</button>
+
+  <script>
+    function sendMessage() {
+      const input = document.getElementById("userInput");
+      const text = input.value.trim();
+      if (!text) return;
+
+      const chat = document.getElementById("chat");
+
+      // ユーザーのメッセージを表示
+      const userMsg = document.createElement("div");
+      userMsg.className = "message user";
+      userMsg.textContent = text;
+      chat.appendChild(userMsg);
+
+      // AIの返答（簡易応答）
+      const botMsg = document.createElement("div");
+      botMsg.className = "message bot";
+      if (text.includes("こんにちは")) {
+        botMsg.textContent = "こんにちは、明良さん！";
+      } else {
+        botMsg.textContent = "すみません、まだ理解できません。";
+      }
+      chat.appendChild(botMsg);
+
+      input.value = "";
+    }
+  </script>
+
   <script src="sw.js"></script>
 </body>
 </html>
