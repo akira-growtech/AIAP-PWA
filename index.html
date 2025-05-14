@@ -34,34 +34,49 @@
   <input type="text" id="userInput" placeholder="メッセージを入力..." />
   <button onclick="sendMessage()">送信</button>
 
-  <script>
-    function sendMessage() {
-      const input = document.getElementById("userInput");
-      const text = input.value.trim();
-      if (!text) return;
+<script>
+  async function sendMessage() {
+    const input = document.getElementById("userInput");
+    const text = input.value.trim();
+    if (!text) return;
 
-      const chat = document.getElementById("chat");
+    const chat = document.getElementById("chat");
 
-      // ユーザーのメッセージを表示
-      const userMsg = document.createElement("div");
-      userMsg.className = "message user";
-      userMsg.textContent = text;
-      chat.appendChild(userMsg);
+    const userMsg = document.createElement("div");
+    userMsg.className = "message user";
+    userMsg.textContent = text;
+    chat.appendChild(userMsg);
 
-      // AIの返答（簡易応答）
-      const botMsg = document.createElement("div");
-      botMsg.className = "message bot";
-      if (text.includes("こんにちは")) {
-        botMsg.textContent = "こんにちは、明良さん！";
-      } else {
-        botMsg.textContent = "すみません、まだ理解できません。";
-      }
-      chat.appendChild(botMsg);
+    // ChatGPT API呼び出し
+    const botMsg = document.createElement("div");
+    botMsg.className = "message bot";
+    botMsg.textContent = "考え中...";
+    chat.appendChild(botMsg);
 
-      input.value = "";
+    try {
+      const response = await fetch("https://api.openai.com/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer **ここにあなたのAPIキーを貼る**"
+        },
+        body: JSON.stringify({
+          model: "gpt-3.5-turbo",
+          messages: [
+            { role: "system", content: "あなたは明良さん専用のAIアシスタントです。" },
+            { role: "user", content: text }
+          ]
+        })
+      });
+
+      const data = await response.json();
+      const reply = data.choices[0].message.content;
+      botMsg.textContent = reply;
+    } catch (err) {
+      botMsg.textContent = "エラーが発生しました。";
+      console.error(err);
     }
-  </script>
 
-  <script src="sw.js"></script>
-</body>
-</html>
+    input.value = "";
+  }
+</script>
